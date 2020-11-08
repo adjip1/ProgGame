@@ -1,0 +1,70 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.AI;
+
+public class EnemyAi : MonoBehaviour
+{
+
+	public GameObject Player;
+	public float TargetDistance;
+	//public float AllowedRange;
+	public GameObject Enemy;
+	public float EnemySpeed;
+	public int EnemyTrigger;
+	public float LineOfSight;
+	public float viewDistance = 30;
+	public bool isAware = false;
+	private NavMeshAgent agent;
+
+
+	public void Start()
+	{
+		agent = GetComponent<NavMeshAgent>();
+	}
+	// Update is called once per frame
+	public void Update()
+	{
+		if (isAware)
+		{
+			agent.SetDestination(Player.transform.position);
+		}
+		transform.LookAt(Player.transform);
+		if (TargetDistance == LineOfSight)
+		{
+			EnemySpeed = 0.008f;
+			if (EnemyTrigger == 0)
+			{
+				Enemy.GetComponent<Player>();
+				transform.position = Vector3.MoveTowards(transform.position, Player.transform.position, EnemySpeed);
+				//Enemy.GetComponent<LineOfSight>();
+			}
+		}
+		if (TargetDistance == LineOfSight)
+		{
+			SearchForPlayer();
+		}
+		else
+		{
+			EnemySpeed = 0f;
+		}
+	}
+	public void SearchForPlayer()
+	{
+		if (Vector3.Angle(Vector3.forward, transform.InverseTransformPoint(Player.transform.position)) < TargetDistance)
+		{
+			if (Vector3.Distance(transform.position, Player.transform.position) < viewDistance)
+			{
+				OnAware();
+			}
+		}
+
+	}
+
+	public void OnAware()
+	{
+		isAware = true;
+	}
+
+}
